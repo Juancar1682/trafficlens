@@ -5,6 +5,8 @@ import TopBar from "./components/TopBar";
 import MapView from "./components/MapView";
 import RiskTable from "./components/RiskTable";
 import SpeedGauge from "./components/SpeedGauge";
+import VolumeChart from "./components/VolumeChart";
+import HeatmapChart from "./components/HeatmapChart";
 import { mockSegments } from "./data/mockSegments";
 import type { RoadSegment } from "./data/mockSegments";
 
@@ -92,7 +94,7 @@ export default function App() {
                   selectedSegment?.name ?? "Select a segment on the map"
                 }
               />
-              <div style={{ flex: 1, minHeight: 0 }}>
+              <div style={{ flex: 1, minHeight: 10 }}>
                 <RiskTable
                   segments={mockSegments}
                   selectedSegment={selectedSegment}
@@ -100,6 +102,13 @@ export default function App() {
                 />
               </div>
             </div>
+          </div>
+
+          {/* Bottom Row */}
+
+          <div className="grid grid-cols-2 gap-4">
+            <VolumeChart activeFilter={activeFilter} />
+            <HeatmapChart activeFilter={activeFilter} />
           </div>
         </main>
       </div>
