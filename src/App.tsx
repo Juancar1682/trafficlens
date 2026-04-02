@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar";
 import TopBar from "./components/TopBar";
 import MapView from "./components/MapView";
 import RiskTable from "./components/RiskTable";
+import SpeedGauge from "./components/SpeedGauge";
 import { mockSegments } from "./data/mockSegments";
 import type { RoadSegment } from "./data/mockSegments";
 
@@ -61,24 +62,44 @@ export default function App() {
             />
           </div>
 
-          {/* Map Row */}
-          <div
-            className="rounded-2xl overflow-hidden"
-            style={{
-              height: "460px",
-              border: "1px solid var(--border)",
-            }}
-          >
-            <MapView
-              segments={mockSegments}
-              selectedSegment={selectedSegment}
-              onSelect={setSelectedSegment}
-            />
-            <RiskTable
-              segments={mockSegments}
-              selectedSegment={selectedSegment}
-              onSelect={setSelectedSegment}
-            />
+          {/* Map + Right Column Row */}
+          <div className="flex gap-4" style={{ height: "460px" }}>
+            {/* Map */}
+            <div
+              className="flex-1 rounded-2xl overflow-hidden"
+              style={{ border: "1px solid var(--border)" }}
+            >
+              <MapView
+                segments={mockSegments}
+                selectedSegment={selectedSegment}
+                onSelect={setSelectedSegment}
+              />
+            </div>
+
+            {/* Right Column */}
+            <div
+              style={{
+                width: "300px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px",
+              }}
+            >
+              <SpeedGauge
+                avgSpeed={selectedSegment?.avgSpeed ?? 0}
+                speedLimit={selectedSegment?.speedLimit ?? 45}
+                segmentName={
+                  selectedSegment?.name ?? "Select a segment on the map"
+                }
+              />
+              <div style={{ flex: 1, minHeight: 0 }}>
+                <RiskTable
+                  segments={mockSegments}
+                  selectedSegment={selectedSegment}
+                  onSelect={setSelectedSegment}
+                />
+              </div>
+            </div>
           </div>
         </main>
       </div>
