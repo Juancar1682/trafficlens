@@ -3,6 +3,7 @@ import KpiCard from "./components/KpiCard";
 import Sidebar from "./components/Sidebar";
 import TopBar from "./components/TopBar";
 import MapView from "./components/MapView";
+import RiskTable from "./components/RiskTable";
 import { mockSegments } from "./data/mockSegments";
 import type { RoadSegment } from "./data/mockSegments";
 
@@ -69,6 +70,11 @@ export default function App() {
             }}
           >
             <MapView
+              segments={mockSegments}
+              selectedSegment={selectedSegment}
+              onSelect={setSelectedSegment}
+            />
+            <RiskTable
               segments={mockSegments}
               selectedSegment={selectedSegment}
               onSelect={setSelectedSegment}
