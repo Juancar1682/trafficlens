@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Box, Flex, Text, Divider } from "@chakra-ui/react";
 
 interface NavItemProps {
   label: string;
@@ -8,35 +9,34 @@ interface NavItemProps {
 }
 
 function NavItem({ label, active, icon, onClick }: NavItemProps) {
-  const [hovered, setHovered] = useState(false);
-
   return (
-    <div
-      className="flex items-center gap-3 mx-3 px-3 py-2.5 rounded-xl cursor-pointer text-sm transition-all duration-150"
-      style={{
-        background: active
-          ? "rgba(0,255,148,0.08)"
-          : hovered
-            ? "rgba(255,255,255,0.04)"
-            : "transparent",
-        color: active ? "#00ff94" : hovered ? "var(--text)" : "var(--muted)",
-        fontFamily: "var(--font-body)",
-        fontWeight: active ? 500 : 400,
-        borderLeft: active ? "2px solid #00ff94" : "2px solid transparent",
+    <Flex
+      align="center"
+      gap={3}
+      mx={3}
+      px={3}
+      py={2}
+      borderRadius="xl"
+      cursor="pointer"
+      fontSize="sm"
+      transition="all 0.15s"
+      fontFamily="var(--font-body)"
+      fontWeight={active ? 500 : 400}
+      color={active ? "#00ff94" : "var(--muted)"}
+      bg={active ? "rgba(0,255,148,0.08)" : "transparent"}
+      borderLeft={active ? "2px solid #00ff94" : "2px solid transparent"}
+      _hover={{
+        bg: active ? "rgba(0,255,148,0.08)" : "rgba(255,255,255,0.04)",
+        color: active ? "#00ff94" : "var(--text)",
       }}
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
     >
-      <span style={{ opacity: active ? 1 : 0.6 }}>{icon}</span>
+      <Box opacity={active ? 1 : 0.6}>{icon}</Box>
       {label}
       {active && (
-        <div
-          className="ml-auto w-1 h-1 rounded-full"
-          style={{ background: "#00ff94" }}
-        />
+        <Box ml="auto" w="6px" h="6px" borderRadius="full" bg="#00ff94" />
       )}
-    </div>
+    </Flex>
   );
 }
 
@@ -209,129 +209,127 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside
-      className="fixed left-0 top-0 flex flex-col"
-      style={{
-        width: "256px",
-        height: "100vh",
-        background: "var(--surface)",
-        borderRight: "1px solid var(--border)",
-        zIndex: 50,
-      }}
+    <Box
+      position="fixed"
+      left={0}
+      top={0}
+      display="flex"
+      flexDirection="column"
+      w="256px"
+      h="100vh"
+      bg="var(--surface)"
+      borderRight="1px solid var(--border)"
+      zIndex={50}
     >
       {/* Logo */}
-      <div
-        className="flex items-center gap-3 px-5 py-5"
-        style={{ borderBottom: "1px solid var(--border)" }}
+      <Flex
+        align="center"
+        gap={3}
+        px={5}
+        py={5}
+        borderBottom="1px solid var(--border)"
       >
-        <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-          style={{
-            background: "linear-gradient(135deg, #00ff94 0%, #4d9fff 100%)",
-            boxShadow: "0 0 16px rgba(0,255,148,0.3)",
-          }}
-        >
-          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-            <path
-              d="M2 13L5.5 6 9 9.5 13 2"
-              stroke="#080a0d"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <circle cx="13" cy="2" r="1.8" fill="#080a0d" />
-          </svg>
-        </div>
-        <div>
-          <div
-            style={{
-              fontFamily: "var(--font-display)",
-              fontWeight: 700,
-              fontSize: "15px",
-              letterSpacing: "0.08em",
-              color: "var(--text)",
-            }}
+        <Box>
+          <Text
+            fontFamily="var(--font-display)"
+            fontWeight={700}
+            fontSize="15px"
+            letterSpacing="0.08em"
+            color="var(--text)"
           >
             TRAFFICLENS
-          </div>
-          <div
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "10px",
-              color: "var(--muted)",
-              letterSpacing: "0.05em",
-            }}
+          </Text>
+          <Text
+            fontFamily="var(--font-mono)"
+            fontSize="10px"
+            color="var(--muted)"
+            letterSpacing="0.05em"
           >
-            v1.0 · <span style={{ color: "#00ff94" }}>LIVE</span>
-          </div>
-        </div>
-      </div>
+            v1.0 ·{" "}
+            <Box as="span" color="#00ff94">
+              LIVE
+            </Box>
+          </Text>
+        </Box>
+      </Flex>
 
       {/* Region */}
-      <div
-        className="px-4 py-3"
-        style={{ borderBottom: "1px solid var(--border)" }}
-      >
-        <div
-          className="text-xs mb-2 tracking-widest uppercase"
-          style={{ fontFamily: "var(--font-mono)", color: "var(--muted)" }}
+      <Box px={4} py={3} borderBottom="1px solid var(--border)">
+        <Text
+          fontFamily="var(--font-mono)"
+          fontSize="10px"
+          color="var(--muted)"
+          letterSpacing="0.08em"
+          textTransform="uppercase"
+          mb={2}
         >
           Active Region
-        </div>
-        <div
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg"
-          style={{
-            background: "var(--surface2)",
-            border: "1px solid var(--border-strong)",
-            cursor: "pointer",
-          }}
+        </Text>
+        <Flex
+          align="center"
+          gap={2}
+          px={3}
+          py={2}
+          borderRadius="lg"
+          cursor="pointer"
+          bg="var(--surface2)"
+          border="1px solid var(--border-strong)"
+          _hover={{ borderColor: "rgba(0,255,148,0.3)" }}
+          transition="all 0.2s"
         >
-          <div
-            className="w-2 h-2 rounded-full shrink-0"
+          <Box
+            w="8px"
+            h="8px"
+            borderRadius="full"
+            flexShrink={0}
             style={{
               background: "#00ff94",
               boxShadow: "0 0 6px rgba(0,255,148,0.6)",
             }}
           />
-          <span
-            style={{
-              fontFamily: "var(--font-display)",
-              fontWeight: 600,
-              fontSize: "13px",
-              color: "var(--text)",
-            }}
+          <Text
+            fontFamily="var(--font-display)"
+            fontWeight={600}
+            fontSize="13px"
+            color="var(--text)"
           >
             Jacksonville, FL
-          </span>
-          <svg
-            className="ml-auto"
-            width="11"
-            height="11"
-            viewBox="0 0 11 11"
-            fill="none"
-          >
-            <path
-              d="M2.5 4.5l3 3 3-3"
-              stroke="var(--muted)"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-            />
-          </svg>
-        </div>
-      </div>
+          </Text>
+          <Box ml="auto">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+              <path
+                d="M2.5 4.5l3 3 3-3"
+                stroke="var(--muted)"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+              />
+            </svg>
+          </Box>
+        </Flex>
+      </Box>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto py-3 flex flex-col gap-0.5">
-        <div
-          className="px-4 mb-1 text-xs tracking-widest uppercase"
-          style={{
-            fontFamily: "var(--font-mono)",
-            color: "var(--muted)",
-            opacity: 0.6,
-          }}
+      <Box
+        flex={1}
+        overflowY="auto"
+        py={3}
+        display="flex"
+        flexDirection="column"
+        gap={0.5}
+      >
+        <Text
+          px={4}
+          mb={1}
+          fontFamily="var(--font-mono)"
+          fontSize="10px"
+          color="var(--muted)"
+          letterSpacing="0.08em"
+          textTransform="uppercase"
+          opacity={0.6}
         >
           Analytics
-        </div>
+        </Text>
+
         {analyticsNav.map((item) => (
           <NavItem
             key={item.label}
@@ -342,16 +340,20 @@ export default function Sidebar() {
           />
         ))}
 
-        <div
-          className="px-4 mt-4 mb-1 text-xs tracking-widest uppercase"
-          style={{
-            fontFamily: "var(--font-mono)",
-            color: "var(--muted)",
-            opacity: 0.6,
-          }}
+        <Text
+          px={4}
+          mt={4}
+          mb={1}
+          fontFamily="var(--font-mono)"
+          fontSize="10px"
+          color="var(--muted)"
+          letterSpacing="0.08em"
+          textTransform="uppercase"
+          opacity={0.6}
         >
           Reports
-        </div>
+        </Text>
+
         {reportsNav.map((item) => (
           <NavItem
             key={item.label}
@@ -361,15 +363,21 @@ export default function Sidebar() {
             onClick={() => setActiveNav(item.label)}
           />
         ))}
-      </nav>
+      </Box>
+
+      <Divider borderColor="var(--border)" />
 
       {/* User */}
-      <div
-        className="flex items-center gap-3 px-4 py-4"
-        style={{ borderTop: "1px solid var(--border)" }}
-      >
-        <div
-          className="w-8 h-8 rounded-full flex items-center justify-center text-xs shrink-0"
+      <Flex align="center" gap={3} px={4} py={4}>
+        <Box
+          w="32px"
+          h="32px"
+          borderRadius="full"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          fontSize="12px"
+          flexShrink={0}
           style={{
             background: "linear-gradient(135deg, #00ff94, #4d9fff)",
             color: "#080a0d",
@@ -378,28 +386,24 @@ export default function Sidebar() {
           }}
         >
           JC
-        </div>
-        <div className="flex-1 min-w-0">
-          <div
-            style={{
-              fontFamily: "var(--font-display)",
-              fontWeight: 600,
-              fontSize: "13px",
-              color: "var(--text)",
-            }}
+        </Box>
+        <Box flex={1} minW={0}>
+          <Text
+            fontFamily="var(--font-display)"
+            fontWeight={600}
+            fontSize="13px"
+            color="var(--text)"
           >
             Juan C.
-          </div>
-          <div
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "10px",
-              color: "var(--muted)",
-            }}
+          </Text>
+          <Text
+            fontFamily="var(--font-mono)"
+            fontSize="10px"
+            color="var(--muted)"
           >
             Traffic Engineer
-          </div>
-        </div>
+          </Text>
+        </Box>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <circle cx="7" cy="5" r="2" stroke="var(--muted)" strokeWidth="1.3" />
           <path
@@ -409,7 +413,7 @@ export default function Sidebar() {
             strokeLinecap="round"
           />
         </svg>
-      </div>
-    </aside>
+      </Flex>
+    </Box>
   );
 }

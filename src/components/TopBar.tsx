@@ -1,202 +1,292 @@
 import { useState } from "react";
+import {
+  Box,
+  Flex,
+  Text,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Button,
+  ButtonGroup,
+  IconButton,
+} from "@chakra-ui/react";
 
 type TimeFilter = "today" | "week" | "month";
 
 interface TopBarProps {
   activeFilter: TimeFilter;
   onFilterChange: (filter: TimeFilter) => void;
+  onAiQuery: (query: string) => void;
+  onAiClear: () => void;
+  aiLoading: boolean;
+  aiExplanation: string;
 }
 
-export default function TopBar({ activeFilter, onFilterChange }: TopBarProps) {
+export default function TopBar({
+  activeFilter,
+  onFilterChange,
+  onAiQuery,
+  onAiClear,
+  aiLoading,
+  aiExplanation,
+}: TopBarProps) {
   const [query, setQuery] = useState("");
-
   const filters: TimeFilter[] = ["today", "week", "month"];
 
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Enter" && query.trim()) {
+      onAiQuery(query.trim());
+    }
+  }
+
+  function handleClear() {
+    setQuery("");
+    onAiClear();
+  }
+
   return (
-    <header
-      className="flex items-center justify-between px-6 py-4 sticky top-0 z-40"
+    <Box
+      as="header"
+      px={6}
+      py={4}
+      position="sticky"
+      top={0}
+      zIndex={40}
+      borderBottom="1px solid var(--border)"
       style={{
-        borderBottom: "1px solid var(--border)",
         background: "rgba(8,10,13,0.85)",
         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
       }}
     >
-      {/* Left — title */}
-      <div>
-        <h1
-          style={{
-            fontFamily: "var(--font-display)",
-            fontWeight: 800,
-            fontSize: "20px",
-            letterSpacing: "-0.02em",
-            color: "var(--text)",
-          }}
-        >
-          Traffic Overview
-        </h1>
-        <div
-          className="flex items-center gap-2 mt-0.5"
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "11px",
-            color: "var(--muted)",
-          }}
-        >
-          <span>Last updated:</span>
-          <span style={{ color: "#00ff94" }}>2 min ago</span>
-          <span style={{ color: "var(--border-strong)" }}>·</span>
-          <span>847 segments indexed</span>
-        </div>
-      </div>
-
-      {/* Center — AI query bar */}
-      <div
-        className="flex items-center gap-3 px-4 py-2.5 rounded-xl"
-        style={{
-          width: "380px",
-          background: "var(--surface2)",
-          border: "1px solid rgba(0,255,148,0.2)",
-          boxShadow: "0 0 24px rgba(0,255,148,0.06)",
-        }}
-      >
-        {/* AI badge */}
-        <div
-          className="flex items-center gap-1.5 shrink-0 px-2 py-1 rounded-md"
-          style={{
-            background: "rgba(0,255,148,0.1)",
-            border: "1px solid rgba(0,255,148,0.2)",
-          }}
-        >
-          <div
-            className="w-1.5 h-1.5 rounded-full"
-            style={{ background: "#00ff94", boxShadow: "0 0 4px #00ff94" }}
-          />
-          <span
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "10px",
-              color: "#00ff94",
-              letterSpacing: "0.08em",
-            }}
+      <Flex align="center" justify="space-between">
+        {/* Left — title */}
+        <Box>
+          <Text
+            fontFamily="var(--font-display)"
+            fontWeight={800}
+            fontSize="20px"
+            letterSpacing="-0.02em"
+            color="var(--text)"
           >
-            AI
-          </span>
-        </div>
+            Traffic Overview
+          </Text>
+          <Flex align="center" gap={2} mt={0.5}>
+            <Text
+              fontFamily="var(--font-mono)"
+              fontSize="11px"
+              color="var(--muted)"
+            >
+              Last updated:
+            </Text>
+            <Text fontFamily="var(--font-mono)" fontSize="11px" color="#00ff94">
+              2 min ago
+            </Text>
+            <Text
+              fontFamily="var(--font-mono)"
+              fontSize="11px"
+              color="var(--border-strong)"
+            >
+              ·
+            </Text>
+            <Text
+              fontFamily="var(--font-mono)"
+              fontSize="11px"
+              color="var(--muted)"
+            >
+              847 segments indexed
+            </Text>
+          </Flex>
+        </Box>
 
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Ask: highest-risk roads on Friday evenings…"
-          style={{
-            background: "transparent",
-            border: "none",
-            outline: "none",
-            color: "var(--text)",
-            fontFamily: "var(--font-body)",
-            fontSize: "13px",
-            flex: 1,
-          }}
-        />
+        {/* Center — AI query bar */}
+        <Box w="420px">
+          <InputGroup>
+            <InputLeftElement pointerEvents="none" h="full" pl={2}>
+              <Flex
+                align="center"
+                gap={1.5}
+                px={2}
+                py={1}
+                borderRadius="md"
+                bg="rgba(0,255,148,0.1)"
+                border="1px solid rgba(0,255,148,0.2)"
+              >
+                <Box
+                  w="6px"
+                  h="6px"
+                  borderRadius="full"
+                  bg="#00ff94"
+                  style={{
+                    boxShadow: aiLoading
+                      ? "0 0 8px #00ff94"
+                      : "0 0 4px #00ff94",
+                    animation: aiLoading
+                      ? "pulse 0.8s ease-in-out infinite"
+                      : "none",
+                  }}
+                />
+                <Text
+                  fontFamily="var(--font-mono)"
+                  fontSize="10px"
+                  color="#00ff94"
+                  letterSpacing="0.08em"
+                >
+                  {aiLoading ? "..." : "AI"}
+                </Text>
+              </Flex>
+            </InputLeftElement>
 
-        {query && (
-          <button
-            onClick={() => setQuery("")}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              color: "var(--muted)",
-              padding: 0,
-            }}
+            <Input
+              pl="72px"
+              pr={query ? "36px" : "12px"}
+              py={2}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Ask: highest-risk roads on Friday evenings…"
+              disabled={aiLoading}
+              bg="var(--surface2)"
+              border="1px solid"
+              borderColor={
+                aiLoading
+                  ? "rgba(0,255,148,0.5)"
+                  : aiExplanation
+                    ? "rgba(0,255,148,0.4)"
+                    : "rgba(0,255,148,0.2)"
+              }
+              borderRadius="xl"
+              color="var(--text)"
+              fontFamily="var(--font-body)"
+              fontSize="13px"
+              _placeholder={{ color: "var(--muted)" }}
+              _hover={{ borderColor: "rgba(0,255,148,0.4)" }}
+              _focus={{
+                borderColor: "rgba(0,255,148,0.6)",
+                boxShadow: "0 0 0 1px rgba(0,255,148,0.3)",
+              }}
+              transition="all 0.3s"
+            />
+
+            {/* Clear button */}
+            {(query || aiExplanation) && !aiLoading && (
+              <Box
+                position="absolute"
+                right={3}
+                top="50%"
+                transform="translateY(-50%)"
+                zIndex={1}
+              >
+                <IconButton
+                  aria-label="Clear query"
+                  size="xs"
+                  variant="ghost"
+                  onClick={handleClear}
+                  color="var(--muted)"
+                  _hover={{ color: "var(--text)", bg: "transparent" }}
+                  icon={
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                      <path
+                        d="M2 2l9 9M11 2l-9 9"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                  }
+                />
+              </Box>
+            )}
+          </InputGroup>
+
+          {/* AI explanation */}
+          {aiExplanation && !aiLoading && (
+            <Box
+              mt={1.5}
+              px={3}
+              py={1.5}
+              borderRadius="lg"
+              fontFamily="var(--font-mono)"
+              fontSize="11px"
+              color="#00ff94"
+              bg="rgba(0,255,148,0.06)"
+              border="1px solid rgba(0,255,148,0.15)"
+            >
+              ✦ {aiExplanation}
+            </Box>
+          )}
+        </Box>
+
+        {/* Right — filters + live badge */}
+        <Flex align="center" gap={2}>
+          {/* Time filters */}
+          <ButtonGroup
+            size="sm"
+            isAttached
+            variant="ghost"
+            p={1}
+            borderRadius="xl"
+            bg="var(--surface2)"
+            border="1px solid var(--border)"
           >
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
-              <path
-                d="M2 2l9 9M11 2l-9 9"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
-          </button>
-        )}
-
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <circle cx="6" cy="6" r="4" stroke="var(--text)" strokeWidth="1.4" />
-          <path
-            d="M9.5 9.5L12 12"
-            stroke="var(--text)"
-            strokeWidth="1.4"
-            strokeLinecap="round"
-          />
-        </svg>
-      </div>
-
-      {/* Right — filters + live badge */}
-      <div className="flex items-center gap-2">
-        {/* Time filters */}
-        <div
-          className="flex items-center gap-1 p-1 rounded-xl"
-          style={{
-            background: "var(--surface2)",
-            border: "1px solid var(--border)",
-          }}
-        >
-          {filters.map((f) => (
-            <button
-              key={f}
-              onClick={() => onFilterChange(f)}
-              className="px-3 py-1.5 rounded-lg text-xs capitalize transition-all duration-150"
-              style={{
-                fontFamily: "var(--font-mono)",
-                background:
-                  activeFilter === f ? "var(--surface3)" : "transparent",
-                color: activeFilter === f ? "var(--text)" : "var(--muted)",
-                border:
+            {filters.map((f) => (
+              <Button
+                key={f}
+                onClick={() => onFilterChange(f)}
+                fontFamily="var(--font-mono)"
+                fontSize="11px"
+                letterSpacing="0.04em"
+                textTransform="capitalize"
+                borderRadius="lg"
+                color={activeFilter === f ? "var(--text)" : "var(--muted)"}
+                bg={activeFilter === f ? "var(--surface3)" : "transparent"}
+                border={
                   activeFilter === f
                     ? "1px solid var(--border-strong)"
-                    : "1px solid transparent",
-                cursor: "pointer",
-                letterSpacing: "0.04em",
-              }}
-            >
-              {f}
-            </button>
-          ))}
-        </div>
+                    : "1px solid transparent"
+                }
+                _hover={{ bg: "var(--surface3)", color: "var(--text)" }}
+                transition="all 0.15s"
+              >
+                {f}
+              </Button>
+            ))}
+          </ButtonGroup>
 
-        {/* Divider */}
-        <div className="w-px h-5" style={{ background: "var(--border)" }} />
+          {/* Divider */}
+          <Box w="1px" h="20px" bg="var(--border)" />
 
-        {/* Live badge */}
-        <div
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
-          style={{
-            background: "rgba(255,77,77,0.08)",
-            border: "1px solid rgba(255,77,77,0.2)",
-          }}
-        >
-          <div
-            className="w-1.5 h-1.5 rounded-full"
-            style={{
-              background: "#ff4d4d",
-              boxShadow: "0 0 6px rgba(255,77,77,0.8)",
-              animation: "pulse 2s ease-in-out infinite",
-            }}
-          />
-          <span
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "11px",
-              color: "#ff4d4d",
-              letterSpacing: "0.1em",
-            }}
+          {/* Live badge */}
+          <Flex
+            align="center"
+            gap={2}
+            px={3}
+            py={1.5}
+            borderRadius="lg"
+            bg="rgba(255,77,77,0.08)"
+            border="1px solid rgba(255,77,77,0.2)"
           >
-            LIVE
-          </span>
-        </div>
-      </div>
-    </header>
+            <Box
+              w="6px"
+              h="6px"
+              borderRadius="full"
+              bg="#ff4d4d"
+              style={{
+                boxShadow: "0 0 6px rgba(255,77,77,0.8)",
+                animation: "pulse 2s ease-in-out infinite",
+              }}
+            />
+            <Text
+              fontFamily="var(--font-mono)"
+              fontSize="11px"
+              color="#ff4d4d"
+              letterSpacing="0.1em"
+            >
+              LIVE
+            </Text>
+          </Flex>
+        </Flex>
+      </Flex>
+    </Box>
   );
 }

@@ -8,6 +8,7 @@ import SpeedGauge from "./components/SpeedGauge";
 import VolumeChart from "./components/VolumeChart";
 import HeatmapChart from "./components/HeatmapChart";
 import { mockSegments } from "./data/mockSegments";
+import { useAiQuery } from "./hooks/useAiQuery";
 import type { RoadSegment } from "./data/mockSegments";
 
 type TimeFilter = "today" | "week" | "month";
@@ -17,12 +18,40 @@ export default function App() {
   const [selectedSegment, setSelectedSegment] = useState<RoadSegment | null>(
     null,
   );
+  const [filteredIds, setFilteredIds] = useState<string[] | null>(null);
+
+  const { runQuery, clearQuery, loading, explanation } = useAiQuery();
+
+  const visibleSegments = filteredIds
+    ? mockSegments.filter((s) => filteredIds.includes(s.id))
+    : mockSegments;
+
+  function handleAiQuery(query: string) {
+    runQuery(query, mockSegments, (ids) => {
+      setFilteredIds(ids);
+      setSelectedSegment(null);
+    });
+  }
+
+  function handleAiClear() {
+    clearQuery(() => {
+      setFilteredIds(null);
+      setSelectedSegment(null);
+    });
+  }
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "100vh" }}>
       <Sidebar />
       <div style={{ marginLeft: "256px" }}>
-        <TopBar activeFilter={activeFilter} onFilterChange={setActiveFilter} />
+        <TopBar
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
+          onAiQuery={handleAiQuery}
+          onAiClear={handleAiClear}
+          aiLoading={loading}
+          aiExplanation={explanation}
+        />
         <main className="p-6 flex flex-col gap-6">
           {/* KPI Row */}
           <div className="grid grid-cols-4 gap-4">
@@ -64,21 +93,18 @@ export default function App() {
             />
           </div>
 
-          {/* Map + Right Column Row */}
+          {/* Map + Right Column */}
           <div className="flex gap-4" style={{ height: "460px" }}>
-            {/* Map */}
             <div
               className="flex-1 rounded-2xl overflow-hidden"
               style={{ border: "1px solid var(--border)" }}
             >
               <MapView
-                segments={mockSegments}
+                segments={visibleSegments}
                 selectedSegment={selectedSegment}
                 onSelect={setSelectedSegment}
               />
             </div>
-
-            {/* Right Column */}
             <div
               style={{
                 width: "300px",
@@ -94,9 +120,9 @@ export default function App() {
                   selectedSegment?.name ?? "Select a segment on the map"
                 }
               />
-              <div style={{ flex: 1, minHeight: 10 }}>
+              <div style={{ flex: 1, minHeight: 0 }}>
                 <RiskTable
-                  segments={mockSegments}
+                  segments={visibleSegments}
                   selectedSegment={selectedSegment}
                   onSelect={setSelectedSegment}
                 />
@@ -105,7 +131,6 @@ export default function App() {
           </div>
 
           {/* Bottom Row */}
-
           <div className="grid grid-cols-2 gap-4">
             <VolumeChart activeFilter={activeFilter} />
             <HeatmapChart activeFilter={activeFilter} />

@@ -25,7 +25,7 @@ export default function MapView({
   return (
     <Map
       mapboxAccessToken={import.meta.env.VITE_MAPBOX_TOKEN}
-      initialViewState={{ longitude: -81.6557, latitude: 30.3322, zoom: 11 }}
+      initialViewState={{ longitude: -81.6557, latitude: 30.3322, zoom: 10 }}
       mapStyle="mapbox://styles/mapbox/dark-v11"
       style={{ width: "100%", height: "100%" }}
     >
@@ -66,14 +66,16 @@ export default function MapView({
           closeOnClick={false}
           onClose={() => setPopupOpen(false)}
           anchor="bottom"
+          maxWidth="200px"
         >
           <div
             style={{
               background: "var(--surface2)",
               border: "1px solid var(--border-strong)",
-              borderRadius: "8px",
-              padding: "10px 12px",
-              minWidth: "160px",
+              borderRadius: "10px",
+              padding: "12px 12px 10px 12px",
+              minWidth: "180px",
+              overflow: "hidden",
             }}
           >
             <div
@@ -82,7 +84,8 @@ export default function MapView({
                 fontWeight: 700,
                 fontSize: "13px",
                 color: "var(--text)",
-                marginBottom: "6px",
+                marginBottom: "8px",
+                paddingRight: "16px",
               }}
             >
               {selectedSegment.name}
@@ -94,7 +97,7 @@ export default function MapView({
                 color: "var(--text-dim)",
                 display: "flex",
                 flexDirection: "column",
-                gap: "3px",
+                gap: "4px",
               }}
             >
               <span>
