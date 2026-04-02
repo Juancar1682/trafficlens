@@ -1,5 +1,3 @@
-import React from "react";
-
 type AccentColor = "green" | "red" | "yellow" | "blue";
 
 interface KpiCardProps {
